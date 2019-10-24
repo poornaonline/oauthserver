@@ -1,5 +1,6 @@
 package com.poorna.oauthserver.dao;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
@@ -8,6 +9,7 @@ import java.util.ArrayList;
 @Configuration
 public class DataSeeder {
 
+    @Autowired
     private BillionaireRepository billionaireRepository;
 
     @PostConstruct
