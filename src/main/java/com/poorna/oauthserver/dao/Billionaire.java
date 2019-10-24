@@ -4,7 +4,7 @@ import javax.persistence.*;
 
 @Entity
 @Table
-public class Billionaires {
+public class Billionaire {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -14,9 +14,9 @@ public class Billionaires {
 
     private int age;
 
-    Billionaires() {}
+    public Billionaire() {}
 
-    Billionaires(String name, int age) {
+    public Billionaire(String name, int age) {
         this.name = name;
         this.age = age;
     }

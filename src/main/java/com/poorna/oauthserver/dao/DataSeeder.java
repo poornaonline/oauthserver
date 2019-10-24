@@ -15,12 +15,12 @@ public class DataSeeder {
     @PostConstruct
     public void SeedData() {
 
-        Billionaires poorna = new Billionaires("Poorna Sampath Jayasinghe", 28);
-        Billionaires elon = new Billionaires("Elon Musk", 49);
-        Billionaires bill = new Billionaires("Bill Gates", 52);
-        Billionaires larry = new Billionaires("Larry Page", 45);
+        Billionaire poorna = new Billionaire("Poorna Sampath Jayasinghe", 28);
+        Billionaire elon = new Billionaire("Elon Musk", 49);
+        Billionaire bill = new Billionaire("Bill Gates", 52);
+        Billionaire larry = new Billionaire("Larry Page", 45);
 
-        ArrayList<Billionaires> billionaires = new ArrayList<>();
+        ArrayList<Billionaire> billionaires = new ArrayList<>();
         billionaires.add(poorna);
         billionaires.add(elon);
         billionaires.add(bill);
