@@ -1,5 +1,6 @@
 package com.poorna.oauthserver.config.security.authenticationserver;
 
+import com.poorna.oauthserver.service.PoornaUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,20 +24,33 @@ import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
 import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
 
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+import javax.sql.DataSource;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Autowired
 	private ClientDetailsService clientDetailsService;
- 
+
 	@Autowired
-    public void globalUserDetails(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication()
-        .withUser("admin").password(passwordEncoder().encode("password")).roles("ADMIN","USER").and()
-        .withUser("user").password(passwordEncoder().encode("password")).roles("USER");
-    }
+	private PoornaUserDetailsService poornaUserDetailsService;
+
+	@Autowired
+	private DataSource dataSource;
+
+	@Override
+	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+		auth.userDetailsService(poornaUserDetailsService)
+				.passwordEncoder(passwordEncoder());
+	}
+ 
+//	@Autowired
+//    public void globalUserDetails(AuthenticationManagerBuilder auth) throws Exception {
+//        auth.inMemoryAuthentication()
+//        .withUser("admin").password(passwordEncoder().encode("password")).roles("ADMIN","USER").and()
+//        .withUser("user").password(passwordEncoder().encode("password")).roles("USER");
+//    }
 	
  
     @Override
@@ -49,7 +63,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		.and()
 		.csrf().disable()
 	  	.authorizeRequests()
-//        .antMatchers("/signup").permitAll()
+        .antMatchers("/h2/**").permitAll()
 	  	.antMatchers("/oauth/token").permitAll()
 //	  	.antMatchers("/api/**").authenticated()
 //        .antMatchers("/api/**").hasRole("USER")
@@ -57,6 +71,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	  	.and()
 	  	.httpBasic()
 	  		.realmName("POORNA_REALM");
+
+		// h2 console not loading issue fix
+		http.headers().frameOptions().sameOrigin();
     }
  
 	
@@ -66,9 +83,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
  
+//	@Bean
+//	public TokenStore tokenStore() {
+//		return new InMemoryTokenStore();
+//	}
+
+	// Tokens are storing in the database instead of the in memory store
 	@Bean
-	public TokenStore tokenStore() {
-		return new InMemoryTokenStore();
+	public JdbcTokenStore tokenStore() {
+		return new JdbcTokenStore(dataSource);
 	}
  
 	@Bean

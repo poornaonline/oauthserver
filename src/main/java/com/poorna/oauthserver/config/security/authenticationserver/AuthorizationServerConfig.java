@@ -13,6 +13,8 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 import org.springframework.security.oauth2.provider.approval.UserApprovalHandler;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 
+import javax.sql.DataSource;
+
 @Configuration
 @EnableAuthorizationServer
 public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
@@ -33,17 +35,24 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Qualifier("authenticationManagerBean")
     private AuthenticationManager authenticationManager;
 
+    @Autowired
+    private DataSource dataSource;
+
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
-        clients.inMemory()
-                .withClient("client")
-                .secret(passwordEncoder.encode("password"))
-                .authorizedGrantTypes("password", "refresh_token")
-                .authorities("ROLE_CLIENT", "ROLE_TRUSTED_CLIENT")
-                .scopes("read", "write", "trust")
-                //.accessTokenValiditySeconds(ONE_DAY)
-                .accessTokenValiditySeconds(300)
-                .refreshTokenValiditySeconds(THIRTY_DAYS);
+
+        clients.jdbc(dataSource).passwordEncoder(passwordEncoder);
+
+        // THIS IS IN MEMORY CLIENT DETAILS SAVING
+//        clients.inMemory()
+//                .withClient("client")
+//                .secret(passwordEncoder.encode("password"))
+//                .authorizedGrantTypes("password", "refresh_token")
+//                .authorities("ROLE_CLIENT", "ROLE_TRUSTED_CLIENT")
+//                .scopes("read", "write", "trust")
+//                //.accessTokenValiditySeconds(ONE_DAY)
+//                .accessTokenValiditySeconds(300)
+//                .refreshTokenValiditySeconds(THIRTY_DAYS);
     }
 
     @Override

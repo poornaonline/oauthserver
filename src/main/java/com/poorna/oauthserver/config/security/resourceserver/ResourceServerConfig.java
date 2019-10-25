@@ -13,13 +13,23 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
 
-		http.
-		anonymous().disable()
-		.requestMatchers().antMatchers("/api/**", "/admin/**")
-		.and().authorizeRequests()
-		.antMatchers("/api/**").access("hasRole('ADMIN') or hasRole('USER')")
-		.antMatchers("/admin/**").access("hasRole('ADMIN')")
-		.and().exceptionHandling().accessDeniedHandler(new OAuth2AccessDeniedHandler());
+		//-- define URL patterns to enable OAuth2 security
+
+//		http.
+//		anonymous().disable()
+//		.requestMatchers().antMatchers("/api/**", "/admin/**")
+//		.and().authorizeRequests()
+//		.antMatchers("/api/**").access("hasRole('ADMIN') or hasRole('USER')")
+//		.antMatchers("/admin/**").access("hasRole('ADMIN')")
+//		.and().exceptionHandling().accessDeniedHandler(new OAuth2AccessDeniedHandler());
+
+//		We are enabling the method level authentication, so we are disabling Resource level authentication (This just requires to have a user role to access resources)
+		http.anonymous().disable()
+				.requestMatchers().antMatchers("/api/**", "/admin/**")
+				.and().authorizeRequests()
+				.antMatchers("/api/**").access("hasRole('USER')")
+				.antMatchers("/admin/**").permitAll()
+				.and().exceptionHandling().accessDeniedHandler(new OAuth2AccessDeniedHandler());
 	}
 	
 }
